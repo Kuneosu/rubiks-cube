@@ -102,24 +102,27 @@ src/
 - 히스토리 최대 1000개 제한
 - 모바일 반응형 필수
 
-## Keyboard Controls
+## Keyboard Controls (QWEASD Layout)
 ```
-기본 회전 (Singmaster Notation 기반):
-- R/L/U/D/F/B: 시계방향 회전
-- r/l/u/d/f/b: 반시계방향 회전 (Stewart Smith 스타일)
-- Shift + 키: 반시계방향 회전 (대안)
-- 숫자 2 + 키: 180도 회전
+큐브 면 회전 (QWEASD 매핑):
+- Q: Front (F) 면 회전
+- W: Back (B) 면 회전
+- E: Right (R) 면 회전
+- A: Left (L) 면 회전
+- S: Down (D) 면 회전
+- D: Up (U) 면 회전
+- Shift + 키: 반시계방향 회전 (')
 
-제어:
-- Space: 타이머 시작/정지
-- Esc: 큐브 리셋
-- Ctrl+Z: 실행 취소
-- Ctrl+Y: 재실행
-- S: 섞기
+카메라 제어:
+- ↑↓←→: 16-카메라 그리드 네비게이션
+- 1-9: 카메라 위치 직접 점프
 
-고급 조작:
-- M/E/S: 중간층 회전 (Middle/Equatorial/Standing)
-- x/y/z: 큐브 전체 회전
+시스템 제어:
+- Space: 스피드큐빙 타이머 / 해결 상태 분석
+- T: 스피드큐빙 모드 토글
+- Ctrl+Z/Y: Undo/Redo
+- R: 큐브 리셋 (일반 모드에서만)
+- +/-: 애니메이션 속도 조절
 ```
 
 ## Color Scheme

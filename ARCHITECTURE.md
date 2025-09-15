@@ -512,26 +512,39 @@ class CubeDebugger {
 }
 ```
 
-### Fluent Interface API
+### 실제 구현된 고급 기능
 ```typescript
-// Stewart Smith 스타일 체이닝 API
-class ModernCubeExplorer {
-  // 메서드 체이닝으로 직관적 조작
-  cube
-    .selectFace('F')
-    .highlight()
-    .rotate(90)
-    .explode(1.5)
-    .wait(1000)
-    .reset()
-    .selectCorners()
-    .rainbow()
-    .shuffle();
-    
-  // 실험적 기능
-  cube
-    .debugMode(true)
-    .showWireframes()
-    .hidePlastics()
-    .visualizeAlgorithm('R U R\' U\'');
+// 하이라이팅 시스템
+export function highlightCubes(cubes: THREE.Mesh[], highlight: boolean): void {
+  cubes.forEach(cube => {
+    if (Array.isArray(cube.material)) {
+      cube.material.forEach(material => {
+        if (material instanceof THREE.MeshLambertMaterial) {
+          if (highlight) {
+            material.emissive.setHex(0x444444) // 발광 효과
+          } else {
+            material.emissive.setHex(0x000000) // 발광 제거
+          }
+        }
+      })
+    }
+  })
 }
+
+// 카메라 레벨별 큐브 플립
+useEffect(() => {
+  const cameraInfo = CAMERA_GRID[currentCamera]
+  const currentLevel = cameraInfo.level
+
+  if (currentLevel !== lastCameraLevelRef.current) {
+    const targetRotation = (currentLevel === 'lower' || currentLevel === 'bottom') ? Math.PI : 0
+
+    gsap.to(cubeGroupRef.current.rotation, {
+      duration: 0.5,
+      x: targetRotation,
+      ease: 'power2.inOut'
+    })
+
+    lastCameraLevelRef.current = currentLevel
+  }
+}, [currentCamera, cubeState])
