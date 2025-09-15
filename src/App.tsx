@@ -4,6 +4,8 @@ import { CameraMinimap } from "./components/CameraMinimap";
 import { HistoryBar } from "./components/UI/HistoryBar";
 import { SpeedcubeTimer } from "./components/UI/SpeedcubeTimer";
 import { ModeToggle } from "./components/UI/ModeToggle";
+import { RankingPanel } from "./components/UI/RankingPanel";
+import { NicknameInputModal } from "./components/UI/NicknameInputModal";
 import { useRubiksCube } from "./hooks/useRubiksCube";
 import { useKeyboardControls } from "./hooks/useKeyboardControls";
 import { useGridCameraNavigation } from "./hooks/useGridCameraNavigation";
@@ -16,6 +18,10 @@ function App() {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isSpeedcubingMode, setIsSpeedcubingMode] = useState(false);
   const [showShuffleModal, setShowShuffleModal] = useState(false);
+  const [showRankingPanel, setShowRankingPanel] = useState(false);
+  const [showNicknameModal, setShowNicknameModal] = useState(false);
+  const [completionTime, setCompletionTime] = useState(0);
+  const [isInputMode, setIsInputMode] = useState(false); // 입력 모드 상태
 
   // Track previous speedcubing mode state
   const prevSpeedcubingModeRef = useRef(isSpeedcubingMode);
@@ -143,7 +149,13 @@ function App() {
 
         if (solved) {
           console.log('✅ Stopping timer - cube is solved!');
-          stopTimer(solved, moveHistory);
+          const success = stopTimer(solved, moveHistory);
+          if (success) {
+            // Show nickname modal with completion time
+            setCompletionTime(currentTime / 1000); // Convert to seconds
+            setShowNicknameModal(true);
+            setIsInputMode(true); // 입력 모드 활성화
+          }
         } else {
           console.log('❌ Timer continues - cube not solved');
         }
@@ -166,6 +178,23 @@ function App() {
 
   const handleShuffleCancel = () => {
     setShowShuffleModal(false);
+  };
+
+  // Nickname modal handlers
+  const handleNicknameModalClose = () => {
+    setShowNicknameModal(false);
+    setCompletionTime(0);
+    setIsInputMode(false); // 입력 모드 해제
+  };
+
+  const handleRecordSaved = (success: boolean) => {
+    if (success) {
+      console.log('✅ Record saved successfully to ranking');
+      // Refresh ranking panel if it's open
+      // The RankingPanel will automatically refresh when the tab is switched
+    } else {
+      console.log('⚠️ Record saved to local storage but failed to save to online ranking');
+    }
   };
 
 
@@ -207,6 +236,7 @@ function App() {
     isCubeLocked: isCubeLocked,
     isSpeedcubingMode: isSpeedcubingMode,
     timerState: timerState,
+    isInputMode: isInputMode, // 입력 모드 상태 전달
   });
 
   return (
@@ -260,11 +290,25 @@ function App() {
       />
 
 
+      {/* Ranking Panel */}
+      <RankingPanel
+        isVisible={showRankingPanel}
+        onToggleVisibility={() => setShowRankingPanel(!showRankingPanel)}
+      />
+
       {/* Shuffle Confirmation Modal */}
       <ShuffleConfirmModal
         isOpen={showShuffleModal}
         onConfirm={handleShuffleConfirm}
         onCancel={handleShuffleCancel}
+      />
+
+      {/* Nickname Input Modal */}
+      <NicknameInputModal
+        isOpen={showNicknameModal}
+        completionTime={completionTime}
+        onClose={handleNicknameModalClose}
+        onRecordSaved={handleRecordSaved}
       />
     </div>
   );

@@ -32,6 +32,7 @@ interface UseKeyboardControlsProps {
   isCubeLocked?: boolean
   isSpeedcubingMode?: boolean
   timerState?: string
+  isInputMode?: boolean // 입력 모드 여부
 }
 
 /**
@@ -61,12 +62,16 @@ export function useKeyboardControls({
   currentCamera,
   isCubeLocked,
   isSpeedcubingMode,
-  timerState
+  timerState,
+  isInputMode
 }: UseKeyboardControlsProps) {
   
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     // Prevent actions during animations
     if (isAnimating) return
+
+    // Prevent actions during input mode (nickname input, etc.)
+    if (isInputMode) return
 
     let key = event.key.toLowerCase()
     let shift = event.shiftKey
@@ -421,24 +426,31 @@ export function useKeyboardControls({
     onZoomChange,
     onModeToggle,
     isCubeLocked,
-    isSpeedcubingMode
+    isSpeedcubingMode,
+    isInputMode
   ])
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    // Prevent actions during input mode
+    if (isInputMode) return
+
     if (event.key === ' ') {
       // Prevent key repeat for spacebar
       if (event.repeat) return
       event.preventDefault()
       onTimerSpaceDown()
     }
-  }, [onTimerSpaceDown])
+  }, [onTimerSpaceDown, isInputMode])
 
   const handleKeyUp = useCallback((event: KeyboardEvent) => {
+    // Prevent actions during input mode
+    if (isInputMode) return
+
     if (event.key === ' ') {
       event.preventDefault()
       onTimerSpaceUp()
     }
-  }, [onTimerSpaceUp])
+  }, [onTimerSpaceUp, isInputMode])
   
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress)

@@ -21,8 +21,8 @@ export function useSpeedcubeTimer(resetCube?: () => void) {
   const [isCubeLocked, setIsCubeLocked] = useState(false)
   
   const startTimeRef = useRef<number | null>(null)
-  const intervalRef = useRef<number | null>(null)
-  const prepareTimeoutRef = useRef<number | null>(null)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const prepareTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const currentMovesRef = useRef<string[]>([])
 
   // Update current time while timer is running
