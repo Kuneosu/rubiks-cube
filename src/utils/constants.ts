@@ -12,12 +12,12 @@ export const LAYER_TOLERANCE = 0.5 // For layer detection in rotations
 export function formatTime(time: number): string {
   const minutes = Math.floor(time / 60000)
   const seconds = Math.floor((time % 60000) / 1000)
-  const milliseconds = Math.floor((time % 1000) / 10)
+  const milliseconds = Math.floor((time % 1000))
 
   if (minutes > 0) {
-    return `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`
+    return `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`
   } else {
-    return `${seconds}.${milliseconds.toString().padStart(2, '0')}`
+    return `${seconds}.${milliseconds.toString().padStart(3, '0')}`
   }
 }
 

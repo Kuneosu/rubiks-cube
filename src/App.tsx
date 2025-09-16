@@ -118,23 +118,21 @@ function App() {
       return;
     }
 
-    // In speedcubing mode, reset camera and check solve state
-    resetCameraToInitial();
+    // In speedcubing mode, check solve state immediately
+    const isSolved = isSimpleCubeSolved(cubesRef.current);
+    console.log('🔍 Space down - Cube solved:', isSolved ? '✅ SOLVED' : '❌ NOT SOLVED', 'timer state:', timerState);
 
-    setTimeout(() => {
-      const isSolved = isSimpleCubeSolved(cubesRef.current);
-      console.log('🔍 Space down - Cube solved:', isSolved ? '✅ SOLVED' : '❌ NOT SOLVED', 'timer state:', timerState);
-
-      if ((timerState === 'idle' || timerState === 'stopped') && !isSolved) {
-        console.log('✅ Starting timer preparation');
-        startPreparing();
-      } else if (isSolved && (timerState === 'idle' || timerState === 'stopped')) {
-        console.log('🎯 Cube already solved, showing shuffle modal');
-        setShowShuffleModal(true);
-      } else {
-        console.log('❌ Conditions not met for timer start or shuffle modal');
-      }
-    }, 500);
+    if ((timerState === 'idle' || timerState === 'stopped') && !isSolved) {
+      console.log('✅ Starting timer preparation');
+      // Reset camera for timer preparation
+      resetCameraToInitial();
+      startPreparing();
+    } else if (isSolved && (timerState === 'idle' || timerState === 'stopped')) {
+      console.log('🎯 Cube already solved, showing shuffle modal');
+      setShowShuffleModal(true);
+    } else {
+      console.log('❌ Conditions not met for timer start or shuffle modal');
+    }
   };
 
   const handleTimerSpaceUp = () => {
@@ -143,26 +141,24 @@ function App() {
     if (timerState === 'preparing' || timerState === 'ready') {
       cancelPreparing();
     } else if (timerState === 'running') {
-      // Reset camera and check solve state
-      resetCameraToInitial();
+      // Check solve state immediately
+      const solved = isSimpleCubeSolved(cubesRef.current);
+      console.log('🔍 Space up - Cube solved:', solved ? '✅ SOLVED' : '❌ NOT SOLVED');
 
-      setTimeout(() => {
-        const solved = isSimpleCubeSolved(cubesRef.current);
-        console.log('🔍 Space up - Cube solved:', solved ? '✅ SOLVED' : '❌ NOT SOLVED');
-
-        if (solved) {
-          console.log('✅ Stopping timer - cube is solved!');
-          const success = stopTimer(solved, moveHistory);
-          if (success) {
-            // Show nickname modal with completion time
-            setCompletionTime(currentTime / 1000); // Convert to seconds
-            setShowNicknameModal(true);
-            setIsInputMode(true); // 입력 모드 활성화
-          }
-        } else {
-          console.log('❌ Timer continues - cube not solved');
+      if (solved) {
+        console.log('✅ Stopping timer - cube is solved!');
+        const success = stopTimer(solved, moveHistory);
+        if (success) {
+          // Reset camera after successful timer stop
+          resetCameraToInitial();
+          // Show nickname modal with completion time
+          setCompletionTime(currentTime / 1000); // Convert to seconds
+          setShowNicknameModal(true);
+          setIsInputMode(true); // 입력 모드 활성화
         }
-      }, 500);
+      } else {
+        console.log('❌ Timer continues - cube not solved');
+      }
     }
   };
 
