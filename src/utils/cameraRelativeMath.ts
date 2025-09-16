@@ -309,11 +309,11 @@ function getTopBottomMapping(cameraId: string): Record<string, string> {
 export function getCameraRelativeXRotation(cameraId: string): string {
   try {
     // Special handling for Top/Bottom overhead views
-    if (cameraId === 'top' || cameraId.startsWith('top-') || 
+    if (cameraId === 'top' || cameraId.startsWith('top-') ||
         cameraId === 'bottom' || cameraId.startsWith('bottom-')) {
       return 'X' // Default X rotation for top/bottom views
     }
-    
+
     // For corner cameras, map to the appropriate X-axis rotation based on camera groups
     const group = getCameraGroup(cameraId)
 
@@ -321,7 +321,7 @@ export function getCameraRelativeXRotation(cameraId: string): string {
     // Flip towards camera (Z-axis rotation towards viewer) - reversed direction
     const xRotationMap: Record<string, string> = {
       'group-1': "Z'",  // front-right/front cameras - flip towards camera
-      'group-2': 'X',   // right/back-right cameras - flip towards camera  
+      'group-2': 'X',   // right/back-right cameras - flip towards camera
       'group-3': 'Z',   // back/back-left cameras - flip towards camera
       'group-4': "X'",  // left/front-left cameras - flip towards camera
       'group-5': 'Z',   // lower back/back-left cameras - flip towards camera
@@ -329,12 +329,47 @@ export function getCameraRelativeXRotation(cameraId: string): string {
       'group-7': "Z'",  // lower front/front-right cameras - flip towards camera
       'group-8': 'X',   // lower right/back-right cameras - flip towards camera
     }
-    
+
     return xRotationMap[group] || 'X'
-    
+
   } catch (error) {
     console.error(`Failed to get X-rotation mapping for ${cameraId}:`, error)
     return 'X' // Default fallback
+  }
+}
+
+/**
+ * Get camera-relative Y-axis rotation mapping (horizontal flip)
+ */
+export function getCameraRelativeYRotation(cameraId: string): string {
+  try {
+    // Special handling for Top/Bottom overhead views
+    if (cameraId === 'top' || cameraId.startsWith('top-') ||
+        cameraId === 'bottom' || cameraId.startsWith('bottom-')) {
+      return 'Y' // Default Y rotation for top/bottom views
+    }
+
+    // For corner cameras, map to the appropriate Y-axis rotation based on camera groups
+    const group = getCameraGroup(cameraId)
+
+    // Camera group to horizontal rotation mapping (camera-relative)
+    // Rotate around Y axis (up-down axis)
+    const yRotationMap: Record<string, string> = {
+      'group-1': 'Y',   // front-right/front cameras
+      'group-2': 'Y',   // right/back-right cameras
+      'group-3': 'Y',   // back/back-left cameras
+      'group-4': 'Y',   // left/front-left cameras
+      'group-5': 'Y',   // lower back/back-left cameras
+      'group-6': 'Y',   // lower left/front-left cameras
+      'group-7': 'Y',   // lower front/front-right cameras
+      'group-8': 'Y',   // lower right/back-right cameras
+    }
+
+    return yRotationMap[group] || 'Y'
+
+  } catch (error) {
+    console.error(`Failed to get Y-rotation mapping for ${cameraId}:`, error)
+    return 'Y' // Default fallback
   }
 }
 

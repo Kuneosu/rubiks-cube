@@ -1,15 +1,25 @@
 interface KeyGuideProps {
   isVisible?: boolean
   onToggleVisibility?: () => void
+  isCameraMinimapVisible?: boolean
 }
 
-export function KeyGuide({ isVisible = false, onToggleVisibility }: KeyGuideProps) {
+export function KeyGuide({ isVisible = false, onToggleVisibility, isCameraMinimapVisible = true }: KeyGuideProps) {
+  // Calculate left position based on camera minimap visibility
+  // Desktop: 280px when minimap is visible (220px width + 40px gap + 20px margin), 70px when collapsed (40px button width + 30px gap + 20px margin)
+  const leftPosition = isCameraMinimapVisible ? '280px' : '70px';
+
+  const dynamicStyle = {
+    left: leftPosition
+  };
+
   if (!isVisible) {
     return (
       <button
         className="keyguide-toggle-btn"
         onClick={onToggleVisibility}
         title="키 가이드 열기"
+        style={dynamicStyle}
       >
         ⌨️
       </button>
@@ -17,7 +27,7 @@ export function KeyGuide({ isVisible = false, onToggleVisibility }: KeyGuideProp
   }
 
   return (
-    <div className="keyguide-panel">
+    <div className="keyguide-panel" style={dynamicStyle}>
       <div className="keyguide-header">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h4>⌨️ Key Guide</h4>
@@ -61,11 +71,8 @@ export function KeyGuide({ isVisible = false, onToggleVisibility }: KeyGuideProp
             </div>
             <div className="guide-row">
               <span className="guide-key">↑</span>
-              <span className="guide-desc">큐브 90도 회전 (Y축)</span>
-            </div>
-            <div className="guide-row">
               <span className="guide-key">↓</span>
-              <span className="guide-desc">큐브 90도 회전 (Y축 반대)</span>
+              <span className="guide-desc">큐브 90도 회전</span>
             </div>
             <div className="guide-row">
               <span className="guide-key">Shift</span>
@@ -147,6 +154,11 @@ export function KeyGuide({ isVisible = false, onToggleVisibility }: KeyGuideProp
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="keyguide-scroll-hint">
+        <span>↓ 더 많은 단축키 ↓</span>
       </div>
     </div>
   )

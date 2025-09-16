@@ -21,6 +21,7 @@ function App() {
   const [showShuffleModal, setShowShuffleModal] = useState(false);
   const [showRankingPanel, setShowRankingPanel] = useState(true);
   const [showKeyGuide, setShowKeyGuide] = useState(false);
+  const [isCameraMinimapVisible, setIsCameraMinimapVisible] = useState(true);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [completionTime, setCompletionTime] = useState(0);
   const [isInputMode, setIsInputMode] = useState(false); // 입력 모드 상태
@@ -268,6 +269,7 @@ function App() {
         onSpeedChange={setAnimationSpeed}
         onZoomChange={setZoomLevel}
         zoomLevel={zoomLevel}
+        onVisibilityChange={setIsCameraMinimapVisible}
       />
 
       {/* Speedcube Timer (only in speedcubing mode) */}
@@ -296,6 +298,7 @@ function App() {
       <KeyGuide
         isVisible={showKeyGuide}
         onToggleVisibility={() => setShowKeyGuide(!showKeyGuide)}
+        isCameraMinimapVisible={isCameraMinimapVisible}
       />
 
       {/* Ranking Panel */}

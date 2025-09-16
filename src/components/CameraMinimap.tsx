@@ -9,6 +9,7 @@ interface CameraMinimapProps {
   onSpeedChange?: (speed: number) => void
   onZoomChange?: (zoom: number) => void
   zoomLevel?: number
+  onVisibilityChange?: (isVisible: boolean) => void
 }
 
 function MinimapScene({ currentCamera }: { currentCamera: string }) {
@@ -112,7 +113,7 @@ function MinimapScene({ currentCamera }: { currentCamera: string }) {
   )
 }
 
-export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange, onZoomChange, zoomLevel = 1 }: CameraMinimapProps) {
+export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange, onZoomChange, zoomLevel = 1, onVisibilityChange }: CameraMinimapProps) {
   const [isVisible, setIsVisible] = useState(true)
   const currentCameraInfo = CAMERA_GRID[currentCamera]
 
@@ -121,7 +122,9 @@ export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange
   }, [onZoomChange])
 
   const toggleVisibility = () => {
-    setIsVisible(!isVisible)
+    const newVisibility = !isVisible
+    setIsVisible(newVisibility)
+    onVisibilityChange?.(newVisibility)
   }
 
   if (!isVisible) {

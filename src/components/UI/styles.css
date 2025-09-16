@@ -1271,7 +1271,7 @@
 .keyguide-panel {
   position: fixed;
   top: 20px;
-  left: 300px; /* Position to the right of camera minimap */
+  /* left position will be set dynamically via inline style */
   width: 260px;
   background: rgba(0, 0, 0, 0.9);
   backdrop-filter: blur(10px);
@@ -1281,6 +1281,7 @@
   z-index: 1000;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: white;
+  transition: left 0.3s ease;
 }
 
 .keyguide-header {
@@ -1318,7 +1319,7 @@
 .keyguide-toggle-btn {
   position: fixed;
   top: 20px;
-  left: 300px; /* Position to the right of camera minimap */
+  /* left position will be set dynamically via inline style */
   width: 40px;
   height: 40px;
   border: none;
@@ -1327,7 +1328,7 @@
   color: rgba(255, 255, 255, 0.7);
   font-size: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease, left 0.3s ease;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   z-index: 1000;
@@ -1342,8 +1343,29 @@
 
 .keyguide-content {
   padding: 16px;
-  max-height: 500px;
+  max-height: 400px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+}
+
+.keyguide-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.keyguide-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.keyguide-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.keyguide-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .keyguide-content .guide-section {
@@ -1393,6 +1415,30 @@
   color: #cccccc;
   font-size: 12px;
   flex: 1;
+}
+
+.keyguide-scroll-hint {
+  padding: 8px 16px;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0 0 12px 12px;
+}
+
+.keyguide-scroll-hint span {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
 /* Ranking Panel Styles */
@@ -1702,13 +1748,13 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .keyguide-toggle-btn {
-    left: 20px;
-    top: 200px; /* Below camera minimap on mobile */
+    /* Mobile: position below camera minimap, left position will be set dynamically */
+    top: 200px !important;
   }
 
   .keyguide-panel {
-    left: 20px;
-    top: 200px; /* Below camera minimap on mobile */
+    /* Mobile: position below camera minimap, left position will be set dynamically */
+    top: 200px !important;
     width: 200px;
     max-height: 60vh;
   }

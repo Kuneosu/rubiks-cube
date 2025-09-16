@@ -298,17 +298,25 @@ export function useKeyboardControls({
     
     if (event.code === 'ArrowUp') {
       event.preventDefault()
-      onCameraOpposite()
+      // Block cube rotation if in speedcubing mode and cube is locked
+      if (isSpeedcubingMode && isCubeLocked) {
+        return
+      }
+      // 카메라 기준 X축 회전 (아래 방향키와 반대방향)
+      const xRotation = getCameraRelativeXRotation(currentCamera)
+      const notation = shift ? xRotation : xRotation + "'"
+      console.log(`DEBUG: Camera: ${currentCamera}, X-Rotation: ${xRotation}, Shift: ${shift}, Notation: ${notation} (opposite of down)`)
+      onFaceRotation(notation)
       return
     }
-    
+
     if (event.code === 'ArrowDown') {
       event.preventDefault()
       // Block cube rotation if in speedcubing mode and cube is locked
       if (isSpeedcubingMode && isCubeLocked) {
         return
       }
-      // 카메라 기준 X축 회전 (세로 굴리기)
+      // 카메라 기준 X축 회전 (세로 굴리기) - 원래 동작 유지
       const xRotation = getCameraRelativeXRotation(currentCamera)
       const notation = shift ? xRotation + "'" : xRotation
       console.log(`DEBUG: Camera: ${currentCamera}, X-Rotation: ${xRotation}, Shift: ${shift}, Notation: ${notation}`)
