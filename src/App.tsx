@@ -20,7 +20,7 @@ function App() {
   const [isSpeedcubingMode, setIsSpeedcubingMode] = useState(false);
   const [showShuffleModal, setShowShuffleModal] = useState(false);
   const [showRankingPanel, setShowRankingPanel] = useState(true);
-  const [showKeyGuide, setShowKeyGuide] = useState(false);
+  const [showKeyGuide, setShowKeyGuide] = useState(true);
   const [isCameraMinimapVisible, setIsCameraMinimapVisible] = useState(true);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [completionTime, setCompletionTime] = useState(0);
