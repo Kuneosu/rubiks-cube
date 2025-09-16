@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Scene } from "./components/Scene";
 import { CameraMinimap } from "./components/CameraMinimap";
+import { KeyGuide } from "./components/KeyGuide";
 import { HistoryBar } from "./components/UI/HistoryBar";
 import { SpeedcubeTimer } from "./components/UI/SpeedcubeTimer";
 import { ModeToggle } from "./components/UI/ModeToggle";
@@ -19,6 +20,7 @@ function App() {
   const [isSpeedcubingMode, setIsSpeedcubingMode] = useState(false);
   const [showShuffleModal, setShowShuffleModal] = useState(false);
   const [showRankingPanel, setShowRankingPanel] = useState(true);
+  const [showKeyGuide, setShowKeyGuide] = useState(false);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [completionTime, setCompletionTime] = useState(0);
   const [isInputMode, setIsInputMode] = useState(false); // 입력 모드 상태
@@ -289,6 +291,12 @@ function App() {
         }}
       />
 
+
+      {/* Key Guide Panel */}
+      <KeyGuide
+        isVisible={showKeyGuide}
+        onToggleVisibility={() => setShowKeyGuide(!showKeyGuide)}
+      />
 
       {/* Ranking Panel */}
       <RankingPanel

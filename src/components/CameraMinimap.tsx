@@ -208,6 +208,7 @@ export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange
         </div>
       </div>
 
+
       {/* Animation Speed Control */}
       {onSpeedChange && (
         <div className="animation-speed-control">
