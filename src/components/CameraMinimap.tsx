@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { CAMERA_GRID } from '../constants/cameraLayout'
 
@@ -113,16 +113,42 @@ function MinimapScene({ currentCamera }: { currentCamera: string }) {
 }
 
 export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange, onZoomChange, zoomLevel = 1 }: CameraMinimapProps) {
+  const [isVisible, setIsVisible] = useState(true)
   const currentCameraInfo = CAMERA_GRID[currentCamera]
 
   const handleZoomChange = useCallback((newZoom: number) => {
     onZoomChange?.(newZoom)
   }, [onZoomChange])
 
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible)
+  }
+
+  if (!isVisible) {
+    return (
+      <button
+        className="camera-toggle-btn"
+        onClick={toggleVisibility}
+        title="카메라 패널 열기"
+      >
+        📹
+      </button>
+    )
+  }
+
   return (
     <div className="camera-minimap">
       <div className="minimap-header">
-        <h4>📹 Camera View</h4>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h4>📹 Camera View</h4>
+          <button
+            className="camera-close-btn"
+            onClick={toggleVisibility}
+            title="카메라 패널 닫기"
+          >
+            ✕
+          </button>
+        </div>
         <div className="camera-info">
           <div className="camera-name">{currentCameraInfo?.name || 'Unknown'}</div>
           <div className="camera-type">{currentCameraInfo?.type || ''}</div>

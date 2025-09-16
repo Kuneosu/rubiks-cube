@@ -18,7 +18,7 @@ function App() {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isSpeedcubingMode, setIsSpeedcubingMode] = useState(false);
   const [showShuffleModal, setShowShuffleModal] = useState(false);
-  const [showRankingPanel, setShowRankingPanel] = useState(false);
+  const [showRankingPanel, setShowRankingPanel] = useState(true);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [completionTime, setCompletionTime] = useState(0);
   const [isInputMode, setIsInputMode] = useState(false); // 입력 모드 상태

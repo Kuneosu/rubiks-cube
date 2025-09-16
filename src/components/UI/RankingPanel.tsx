@@ -135,7 +135,7 @@ export function RankingPanel({ isVisible = true, onToggleVisibility }: RankingPa
           <div className="ranking-empty">
             {activeTab === 'all'
               ? '아직 등록된 기록이 없습니다.'
-              : '아직 내 기록이 없습니다.\\n스피드큐빙을 완료해보세요!'
+              : '아직 내 기록이 없습니다.\n스피드큐빙을 완료해보세요!'
             }
           </div>
         )}
