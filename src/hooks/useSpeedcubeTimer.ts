@@ -72,10 +72,10 @@ export function useSpeedcubeTimer(resetCube?: () => void) {
       clearTimeout(prepareTimeoutRef.current)
       prepareTimeoutRef.current = null
     }
-    
+
     if (timerState === 'preparing') {
       setTimerState('idle')
-      setIsCubeLocked(false) // Unlock cube when cancelling
+      setIsCubeLocked(true) // Keep cube locked when cancelling preparation
     } else if (timerState === 'ready') {
       // Start timer when spacebar is released from ready state
       setTimerState('running')
@@ -84,7 +84,7 @@ export function useSpeedcubeTimer(resetCube?: () => void) {
       currentMovesRef.current = []
       setIsCubeLocked(false) // Unlock cube when timer starts
     }
-    
+
     setIsSpacePressed(false)
   }, [timerState])
 
