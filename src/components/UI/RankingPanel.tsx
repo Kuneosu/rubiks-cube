@@ -3,6 +3,10 @@ import { formatTime, formatRank } from '../../lib/rankingService'
 import type { SpeedCubeRecord } from '../../lib/supabase'
 import { localStorageService, supabaseService } from '../../lib/rankingService'
 
+interface MyRecordWithRank extends SpeedCubeRecord {
+  globalRank?: number
+}
+
 interface RankingPanelProps {
   isVisible?: boolean
   onToggleVisibility?: () => void
@@ -11,7 +15,7 @@ interface RankingPanelProps {
 export function RankingPanel({ isVisible = true, onToggleVisibility }: RankingPanelProps) {
   const [activeTab, setActiveTab] = useState<'all' | 'my'>('all')
   const [allRecords, setAllRecords] = useState<SpeedCubeRecord[]>([])
-  const [myRecords, setMyRecords] = useState<SpeedCubeRecord[]>([])
+  const [myRecords, setMyRecords] = useState<MyRecordWithRank[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -30,10 +34,24 @@ export function RankingPanel({ isVisible = true, onToggleVisibility }: RankingPa
     }
   }
 
-  // 내 기록 로드
-  const loadMyRecords = () => {
+  // 내 기록 로드 (전체 순위 포함)
+  const loadMyRecords = async () => {
     const records = localStorageService.getMyRecords()
-    setMyRecords(records)
+
+    // 각 기록에 전체 순위 추가
+    const recordsWithRank: MyRecordWithRank[] = await Promise.all(
+      records.map(async (record) => {
+        try {
+          const globalRank = await supabaseService.getRankByTime(record.time_seconds)
+          return { ...record, globalRank }
+        } catch (error) {
+          console.error('Failed to get rank for record:', error)
+          return { ...record, globalRank: undefined }
+        }
+      })
+    )
+
+    setMyRecords(recordsWithRank)
   }
 
   // 컴포넌트 마운트 시 데이터 로드
@@ -145,7 +163,9 @@ export function RankingPanel({ isVisible = true, onToggleVisibility }: RankingPa
             {currentRecords.map((record, index) => (
               <div key={record.id || index} className="ranking-item">
                 <div className="rank">
-                  {formatRank(index + 1)}
+                  {activeTab === 'my' && 'globalRank' in record && typeof record.globalRank === 'number'
+                    ? formatRank(record.globalRank)
+                    : formatRank(index + 1)}
                 </div>
                 <div className="record-info">
                   <div className="nickname">{record.nickname}</div>
