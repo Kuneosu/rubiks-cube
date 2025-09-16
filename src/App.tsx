@@ -317,6 +317,13 @@ function App() {
         onClose={handleNicknameModalClose}
         onRecordSaved={handleRecordSaved}
       />
+
+      {/* Footer */}
+      <footer className="app-footer">
+        <div className="footer-content">
+          <p>&copy; 2025 Kuneosu. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }
