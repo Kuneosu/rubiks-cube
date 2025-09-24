@@ -170,7 +170,7 @@ function App() {
       lockCube(); // Lock cube after shuffling in speedcubing mode
       // Reset timer to idle state when starting a new scramble
       if (timerState === 'stopped') {
-        resetTimer();
+        resetTimer(); // Keep cube locked in speedcubing mode
       }
     }
   };

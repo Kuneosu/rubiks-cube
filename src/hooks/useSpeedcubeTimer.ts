@@ -118,18 +118,21 @@ export function useSpeedcubeTimer(resetCube?: () => void) {
     return false
   }, [timerState])
 
-  const resetTimer = useCallback(() => {
+  const resetTimer = useCallback((shouldUnlockCube = false) => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current)
     }
     if (prepareTimeoutRef.current) {
       clearTimeout(prepareTimeoutRef.current)
     }
-    
+
     setTimerState('idle')
     setCurrentTime(0)
     setIsSpacePressed(false)
-    setIsCubeLocked(false)
+    // Only unlock cube if explicitly requested (for non-speedcubing mode)
+    if (shouldUnlockCube) {
+      setIsCubeLocked(false)
+    }
     startTimeRef.current = null
     currentMovesRef.current = []
   }, [])
@@ -179,7 +182,7 @@ export function useSpeedcubeTimer(resetCube?: () => void) {
     setCurrentTime(0)
     setIsCubeLocked(false) // Unlock cube when leaving speedcubing mode
     currentMovesRef.current = []
-    
+
     // Clear any running timers
     if (intervalRef.current) {
       clearInterval(intervalRef.current)
