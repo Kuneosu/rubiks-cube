@@ -225,7 +225,7 @@
 /* History Bar styles */
 .history-bar {
   position: fixed;
-  bottom: 0;
+  bottom: 45px; /* Footer 높이만큼 위로 올림 */
   left: 0;
   right: 0;
   background: rgba(30, 30, 30, 0.95);
@@ -2106,5 +2106,10 @@
 
   .footer-content p {
     font-size: 0.8rem;
+  }
+
+  /* 모바일에서 History Bar도 Footer 높이에 맞게 조정 */
+  .history-bar {
+    bottom: 38px; /* 모바일 Footer 높이에 맞게 조정 */
   }
 }
