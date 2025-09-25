@@ -13,8 +13,6 @@ interface CameraMinimapProps {
   isVisible?: boolean
 }
 
-const SPEED_HINT_STORAGE_KEY = 'rubiks-cube-speed-hint-dismissed'
-
 function MinimapScene({ currentCamera }: { currentCamera: string }) {
   return (
     <>
