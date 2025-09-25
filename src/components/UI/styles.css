@@ -56,6 +56,38 @@
   line-height: 1.2;
 }
 
+/* Color Settings Button in Camera Minimap */
+.color-settings-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+}
+
+.color-settings-btn {
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+.color-settings-btn:hover {
+  background: rgba(51, 154, 240, 0.2);
+  border-color: #339af0;
+  color: #339af0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(51, 154, 240, 0.3);
+}
+
 /* Shuffle Confirmation Modal styles */
 .shuffle-modal-overlay {
   position: fixed;

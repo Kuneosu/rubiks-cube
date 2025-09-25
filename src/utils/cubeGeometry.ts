@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
 import { CUBE_CONFIG, CUBE_COLORS } from '../constants'
+import { CubeColors } from '../constants/colorPresets'
 
 /**
  * Creates the geometry for a single cube piece
@@ -19,7 +20,7 @@ export function createCubeGeometry(): RoundedBoxGeometry {
  * Creates materials for each face of a cube based on its position
  * Only external faces get colored, internal faces are dark
  */
-export function createCubeMaterials(x: number, y: number, z: number): THREE.MeshPhysicalMaterial[] {
+export function createCubeMaterials(x: number, y: number, z: number, colors: CubeColors = CUBE_COLORS): THREE.MeshPhysicalMaterial[] {
   const createMaterial = (color: number) => {
     return new THREE.MeshPhysicalMaterial({
       color: color,
@@ -33,12 +34,12 @@ export function createCubeMaterials(x: number, y: number, z: number): THREE.Mesh
   }
 
   return [
-    createMaterial(x === 1 ? CUBE_COLORS.RIGHT : CUBE_COLORS.INTERNAL),   // Right face
-    createMaterial(x === -1 ? CUBE_COLORS.LEFT : CUBE_COLORS.INTERNAL),   // Left face
-    createMaterial(y === 1 ? CUBE_COLORS.TOP : CUBE_COLORS.INTERNAL),     // Top face
-    createMaterial(y === -1 ? CUBE_COLORS.BOTTOM : CUBE_COLORS.INTERNAL), // Bottom face
-    createMaterial(z === 1 ? CUBE_COLORS.FRONT : CUBE_COLORS.INTERNAL),   // Front face
-    createMaterial(z === -1 ? CUBE_COLORS.BACK : CUBE_COLORS.INTERNAL)    // Back face
+    createMaterial(x === 1 ? colors.RIGHT : colors.INTERNAL),   // Right face
+    createMaterial(x === -1 ? colors.LEFT : colors.INTERNAL),   // Left face
+    createMaterial(y === 1 ? colors.TOP : colors.INTERNAL),     // Top face
+    createMaterial(y === -1 ? colors.BOTTOM : colors.INTERNAL), // Bottom face
+    createMaterial(z === 1 ? colors.FRONT : colors.INTERNAL),   // Front face
+    createMaterial(z === -1 ? colors.BACK : colors.INTERNAL)    // Back face
   ]
 }
 
@@ -59,22 +60,22 @@ export function createCubeEdges(geometry: THREE.BufferGeometry): THREE.LineSegme
 /**
  * Creates a single cube piece with proper materials and position
  */
-export function createCubePiece(x: number, y: number, z: number): THREE.Mesh {
+export function createCubePiece(x: number, y: number, z: number, colors?: CubeColors): THREE.Mesh {
   const geometry = createCubeGeometry()
-  const materials = createCubeMaterials(x, y, z)
+  const materials = createCubeMaterials(x, y, z, colors)
   const cube = new THREE.Mesh(geometry, materials)
-  
+
   // Set world position
   cube.position.set(
     x * CUBE_CONFIG.SPACING,
     y * CUBE_CONFIG.SPACING,
     z * CUBE_CONFIG.SPACING
   )
-  
+
   // Enable shadows
   cube.castShadow = true
   cube.receiveShadow = true
-  
+
   // Store initial grid position for easy reset
   cube.userData = {
     initialX: x,
@@ -82,12 +83,38 @@ export function createCubePiece(x: number, y: number, z: number): THREE.Mesh {
     initialZ: z,
     x, y, z
   }
-  
+
   // Add edge lines
   const edges = createCubeEdges(geometry)
   cube.add(edges)
-  
+
   return cube
+}
+
+/**
+ * Updates the colors of existing cubes
+ */
+export function updateCubeColors(cubes: THREE.Mesh[], colors: CubeColors): void {
+  cubes.forEach(cube => {
+    const { x, y, z } = cube.userData
+    if (Array.isArray(cube.material)) {
+      // Face order: Right, Left, Top, Bottom, Front, Back
+      const newColors = [
+        x === 1 ? colors.RIGHT : colors.INTERNAL,   // Right face
+        x === -1 ? colors.LEFT : colors.INTERNAL,   // Left face
+        y === 1 ? colors.TOP : colors.INTERNAL,     // Top face
+        y === -1 ? colors.BOTTOM : colors.INTERNAL, // Bottom face
+        z === 1 ? colors.FRONT : colors.INTERNAL,   // Front face
+        z === -1 ? colors.BACK : colors.INTERNAL    // Back face
+      ]
+
+      cube.material.forEach((mat, index) => {
+        if (mat instanceof THREE.MeshPhysicalMaterial) {
+          mat.color.setHex(newColors[index])
+        }
+      })
+    }
+  })
 }
 
 /**
@@ -96,7 +123,7 @@ export function createCubePiece(x: number, y: number, z: number): THREE.Mesh {
 export function highlightCubes(cubes: THREE.Mesh[], highlight: boolean = true): void {
   const emissiveColor = highlight ? new THREE.Color(0xffff00) : new THREE.Color(0x000000)
   const emissiveIntensity = highlight ? 0.3 : 0
-  
+
   cubes.forEach(cube => {
     if (Array.isArray(cube.material)) {
       cube.material.forEach(mat => {

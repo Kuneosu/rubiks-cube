@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { createCubePiece } from '../utils/cubeGeometry'
+import { CubeColors } from '../constants/colorPresets'
 import { CAMERA_GRID } from '../constants/cameraLayout'
 import { gsap } from 'gsap'
 
@@ -9,12 +10,13 @@ interface CubeGroupProps {
   cubesRef: React.MutableRefObject<THREE.Mesh[]>
   currentCamera: string
   cubeState: string
+  colors?: CubeColors
 }
 
 /**
  * Component that creates and manages the 3x3x3 cube group
  */
-export function CubeGroup({ cubesRef, currentCamera, cubeState }: CubeGroupProps) {
+export function CubeGroup({ cubesRef, currentCamera, cubeState, colors }: CubeGroupProps) {
   const { scene } = useThree()
   const cubeGroupRef = useRef<THREE.Group>()
   const lastCameraLevelRef = useRef<'upper' | 'lower' | 'top' | 'bottom'>()
@@ -41,7 +43,7 @@ export function CubeGroup({ cubesRef, currentCamera, cubeState }: CubeGroupProps
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
         for (let z = -1; z <= 1; z++) {
-          const cube = createCubePiece(x, y, z)
+          const cube = createCubePiece(x, y, z, colors)
           cubeGroup.add(cube)
           cubesRef.current.push(cube)
         }

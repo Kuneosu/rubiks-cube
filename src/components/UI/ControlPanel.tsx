@@ -15,6 +15,7 @@ interface ControlPanelProps {
   onCameraNext: () => void
   onCameraPrev: () => void
   onCameraJump: (cameraId: string) => void
+  onColorSettings: () => void
   onClose: () => void
 }
 
@@ -33,6 +34,7 @@ export function ControlPanel({
   onCameraNext,
   onCameraPrev,
   onCameraJump,
+  onColorSettings,
   onClose
 }: ControlPanelProps) {
   const isAnimating = cubeState !== 'idle'
@@ -105,38 +107,48 @@ export function ControlPanel({
       {/* Main Controls */}
       <div className="controls-section">
         <div className="button-row">
-          <button 
-            onClick={onShuffle} 
+          <button
+            onClick={onShuffle}
             disabled={isAnimating}
             className="action-btn shuffle"
           >
             🎲 Shuffle
           </button>
-          
-          <button 
-            onClick={onReset} 
+
+          <button
+            onClick={onReset}
             disabled={isAnimating}
             className="action-btn reset"
           >
             🔄 Reset
           </button>
         </div>
-        
+
         <div className="button-row">
-          <button 
-            onClick={onUndo} 
+          <button
+            onClick={onUndo}
             disabled={isAnimating || !canUndo}
             className="action-btn undo"
           >
             ↶ Undo
           </button>
-          
-          <button 
-            onClick={onRedo} 
+
+          <button
+            onClick={onRedo}
             disabled={isAnimating || !canRedo}
             className="action-btn redo"
           >
             ↷ Redo
+          </button>
+        </div>
+
+        <div className="button-row">
+          <button
+            onClick={onColorSettings}
+            disabled={isAnimating}
+            className="action-btn color-settings"
+          >
+            🎨 색상 설정
           </button>
         </div>
       </div>

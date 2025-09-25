@@ -36,11 +36,12 @@ function convertToDisplayNotation(notation: string): string {
 /**
  * Custom hook to manage Rubik's cube state and operations
  */
-export function useRubiksCube() {
+export function useRubiksCube(externalAnimationSpeed?: number) {
   const [cubeState, setCubeState] = useState<RubiksCubeState>('idle')
   const [history, setHistory] = useState<MoveHistory>({ moves: [], currentIndex: -1 })
   const [moveHistory, setMoveHistory] = useState<string[]>([]) // Visual history stack
-  const [animationSpeed, setAnimationSpeed] = useState(0.2)
+  // Use external animation speed if provided, otherwise default to 0.2
+  const animationSpeed = externalAnimationSpeed || 0.2
   
   const sceneRef = useRef<THREE.Scene | null>(null)
   const cubesRef = useRef<THREE.Mesh[]>([])
@@ -168,8 +169,7 @@ export function useRubiksCube() {
     cubeState,
     history,
     moveHistory,
-    animationSpeed,
-    
+
     // Actions
     executeMove,
     undoMove,
@@ -177,9 +177,8 @@ export function useRubiksCube() {
     shuffle,
     reset,
     clearHistory,
-    setAnimationSpeed,
     setMoveHistory,
-    
+
     // Refs for components
     sceneRef,
     cubesRef

@@ -7,16 +7,29 @@ import { SpeedcubeTimer } from "./components/UI/SpeedcubeTimer";
 import { ModeToggle } from "./components/UI/ModeToggle";
 import { RankingPanel } from "./components/UI/RankingPanel";
 import { NicknameInputModal } from "./components/UI/NicknameInputModal";
+import { ColorSettings } from "./components/UI/ColorSettings";
 import { useRubiksCube } from "./hooks/useRubiksCube";
 import { useKeyboardControls } from "./hooks/useKeyboardControls";
 import { useGridCameraNavigation } from "./hooks/useGridCameraNavigation";
 import { useSpeedcubeTimer } from "./hooks/useSpeedcubeTimer";
+import { useColorSettings } from "./hooks/useColorSettings";
+import { useAppSettings } from "./hooks/useAppSettings";
 import { isSimpleCubeSolved } from "./utils/cubeValidator";
 import { ShuffleConfirmModal } from "./components/UI/ShuffleConfirmModal";
 import "./components/UI/styles.css";
 
 function App() {
-  const [zoomLevel, setZoomLevel] = useState(1);
+  // App settings (localStorage 연동)
+  const {
+    animationSpeed: savedAnimationSpeed,
+    zoomLevel: savedZoomLevel,
+    colorPresetId: savedColorPresetId,
+    customColors: savedCustomColors,
+    updateAnimationSpeed,
+    updateZoomLevel,
+    updateColorSettings
+  } = useAppSettings();
+
   const [isSpeedcubingMode, setIsSpeedcubingMode] = useState(false);
   const [showShuffleModal, setShowShuffleModal] = useState(false);
   const [showRankingPanel, setShowRankingPanel] = useState(true);
@@ -25,6 +38,7 @@ function App() {
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [completionTime, setCompletionTime] = useState(0);
   const [isInputMode, setIsInputMode] = useState(false); // 입력 모드 상태
+  const [showColorSettings, setShowColorSettings] = useState(false);
 
   // Track previous speedcubing mode state
   const prevSpeedcubingModeRef = useRef(isSpeedcubingMode);
@@ -43,17 +57,46 @@ function App() {
   const {
     cubeState,
     moveHistory,
-    animationSpeed,
     executeMove,
     undoMove,
     redoMove,
     shuffle,
     reset,
     clearHistory,
-    setAnimationSpeed,
     sceneRef,
     cubesRef,
-  } = useRubiksCube();
+  } = useRubiksCube(savedAnimationSpeed);
+
+  // Color settings (직접 저장된 설정값 사용)
+  const colorSettings = useColorSettings();
+
+  // 색상 설정 초기화 로직 개선
+  useEffect(() => {
+    // savedColorPresetId가 로드되면 즉시 colorSettings에 적용
+    if (savedColorPresetId) {
+      colorSettings.updateFromExternal(savedColorPresetId, savedCustomColors);
+    }
+  }, [savedColorPresetId, savedCustomColors]);
+
+  // 큐브 생성 감지를 위한 상태
+  const [cubesCreated, setCubesCreated] = useState(false);
+
+  // 큐브가 생성되었는지 확인
+  useEffect(() => {
+    if (cubesRef.current && cubesRef.current.length > 0 && !cubesCreated) {
+      setCubesCreated(true);
+    }
+  }, [cubesRef.current?.length, cubesCreated]);
+
+  // 큐브가 생성된 후 색상 설정 변경 시에만 색상 적용
+  useEffect(() => {
+    if (cubesCreated && cubesRef.current && cubesRef.current.length > 0) {
+      const colors = colorSettings.getDisplayColors();
+      import('./utils/cubeGeometry').then(({ updateCubeColors }) => {
+        updateCubeColors(cubesRef.current, colors);
+      });
+    }
+  }, [cubesCreated, colorSettings.currentPresetId, colorSettings.customColors]);
 
   // Speedcube timer
   const {
@@ -206,7 +249,25 @@ function App() {
     }
   };
 
+  // 애니메이션 속도 변경 핸들러
+  const handleAnimationSpeedChange = (speed: number) => {
+    updateAnimationSpeed(speed);
+  };
 
+  // 줌 레벨 변경 핸들러
+  const handleZoomLevelChange = (zoom: number) => {
+    updateZoomLevel(zoom);
+  };
+
+  // 색상 변경 핸들러 (localStorage에 저장 + 큐브 업데이트)
+  const handleColorChange = (colors: any) => {
+    // 현재 큐브들의 색상을 업데이트
+    if (cubesRef.current && cubesRef.current.length > 0) {
+      import('./utils/cubeGeometry').then(({ updateCubeColors }) => {
+        updateCubeColors(cubesRef.current, colors);
+      });
+    }
+  };
 
   // Keyboard controls
   useKeyboardControls({
@@ -235,13 +296,13 @@ function App() {
     },
     onTimerSpaceDown: handleTimerSpaceDown,
     onTimerSpaceUp: handleTimerSpaceUp,
-    onAnimationSpeedChange: setAnimationSpeed,
-    onZoomChange: setZoomLevel,
+    onAnimationSpeedChange: handleAnimationSpeedChange,
+    onZoomChange: handleZoomLevelChange,
     onModeToggle: () => {
       setIsSpeedcubingMode(!isSpeedcubingMode);
     },
-    animationSpeed: animationSpeed,
-    zoomLevel: zoomLevel,
+    animationSpeed: savedAnimationSpeed,
+    zoomLevel: savedZoomLevel,
     isAnimating: cubeState !== "idle",
     currentCamera: currentCamera,
     isCubeLocked: isCubeLocked,
@@ -249,6 +310,11 @@ function App() {
     timerState: timerState,
     isInputMode: isInputMode, // 입력 모드 상태 전달
   });
+
+  // 색상 설정 저장 핸들러
+  const handleColorSettingsSave = (presetId: string, customColors?: any) => {
+    updateColorSettings(presetId, customColors);
+  };
 
   return (
     <div className="app">
@@ -267,20 +333,22 @@ function App() {
         sceneRef={sceneRef}
         currentCamera={currentCamera}
         cubeState={cubeState}
-        zoomLevel={zoomLevel}
-        animationSpeed={animationSpeed}
+        zoomLevel={savedZoomLevel}
+        animationSpeed={savedAnimationSpeed}
+        colors={colorSettings.getDisplayColors()}
       />
 
       {/* Camera Minimap */}
       <CameraMinimap
         currentCamera={currentCamera}
         onCameraSelect={jumpToCamera}
-        animationSpeed={animationSpeed}
-        onSpeedChange={setAnimationSpeed}
-        onZoomChange={setZoomLevel}
-        zoomLevel={zoomLevel}
+        animationSpeed={savedAnimationSpeed}
+        onSpeedChange={handleAnimationSpeedChange}
+        onZoomChange={handleZoomLevelChange}
+        zoomLevel={savedZoomLevel}
         onVisibilityChange={setIsCameraMinimapVisible}
         isVisible={isCameraMinimapVisible}
+        onColorSettings={() => setShowColorSettings(true)}
       />
 
       {/* Speedcube Timer (only in speedcubing mode) */}
@@ -323,6 +391,14 @@ function App() {
         isOpen={showShuffleModal}
         onConfirm={handleShuffleConfirm}
         onCancel={handleShuffleCancel}
+      />
+
+      {/* Color Settings Modal */}
+      <ColorSettings
+        isOpen={showColorSettings}
+        onClose={() => setShowColorSettings(false)}
+        onApply={handleColorChange}
+        onSaveSettings={handleColorSettingsSave}
       />
 
       {/* Nickname Input Modal */}

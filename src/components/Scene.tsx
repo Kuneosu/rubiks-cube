@@ -2,6 +2,7 @@ import React from "react";
 import { Canvas } from "@react-three/fiber";
 import * as THREE from "three";
 import { CubeGroup } from "./CubeGroup";
+import { CubeColors } from "../constants/colorPresets";
 import { Lighting } from "./Lighting";
 import { CameraController } from "./CameraController";
 
@@ -12,12 +13,13 @@ interface SceneProps {
   cubeState: string;
   zoomLevel?: number;
   animationSpeed?: number;
+  colors?: CubeColors;
 }
 
 /**
  * Main 3D scene component using React Three Fiber
  */
-export function Scene({ cubesRef, sceneRef, currentCamera, cubeState, zoomLevel = 1, animationSpeed = 1 }: SceneProps) {
+export function Scene({ cubesRef, sceneRef, currentCamera, cubeState, zoomLevel = 1, animationSpeed = 1, colors }: SceneProps) {
   return (
     <Canvas
       shadows
@@ -55,7 +57,7 @@ export function Scene({ cubesRef, sceneRef, currentCamera, cubeState, zoomLevel 
       <CameraController currentCamera={currentCamera} zoomLevel={zoomLevel} animationSpeed={animationSpeed} />
 
       {/* Cube group */}
-      <CubeGroup cubesRef={cubesRef} currentCamera={currentCamera} cubeState={cubeState} />
+      <CubeGroup cubesRef={cubesRef} currentCamera={currentCamera} cubeState={cubeState} colors={colors} />
 
       {/* Ground plane for shadows */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]} receiveShadow>

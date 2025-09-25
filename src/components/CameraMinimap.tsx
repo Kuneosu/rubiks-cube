@@ -11,6 +11,7 @@ interface CameraMinimapProps {
   zoomLevel?: number
   onVisibilityChange?: (isVisible: boolean) => void
   isVisible?: boolean
+  onColorSettings?: () => void
 }
 
 function MinimapScene({ currentCamera }: { currentCamera: string }) {
@@ -114,7 +115,7 @@ function MinimapScene({ currentCamera }: { currentCamera: string }) {
   )
 }
 
-export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange, onZoomChange, zoomLevel = 1, onVisibilityChange, isVisible = true }: CameraMinimapProps) {
+export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange, onZoomChange, zoomLevel = 1, onVisibilityChange, isVisible = true, onColorSettings }: CameraMinimapProps) {
   const [internalVisible, setInternalVisible] = useState(true)
   const [showSpeedHint, setShowSpeedHint] = useState(false)
   const currentCameraInfo = CAMERA_GRID[currentCamera]
@@ -301,6 +302,19 @@ export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange
             <span>50%</span>
             <span>200%</span>
           </div>
+        </div>
+      )}
+
+      {/* Color Settings Button */}
+      {onColorSettings && (
+        <div className="color-settings-section">
+          <button
+            onClick={onColorSettings}
+            className="color-settings-btn"
+            title="색상 설정"
+          >
+            색상 설정
+          </button>
         </div>
       )}
       </div>
