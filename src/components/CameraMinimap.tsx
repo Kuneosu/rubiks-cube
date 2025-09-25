@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { CAMERA_GRID } from '../constants/cameraLayout'
 
@@ -10,7 +10,10 @@ interface CameraMinimapProps {
   onZoomChange?: (zoom: number) => void
   zoomLevel?: number
   onVisibilityChange?: (isVisible: boolean) => void
+  isVisible?: boolean
 }
+
+const SPEED_HINT_STORAGE_KEY = 'rubiks-cube-speed-hint-dismissed'
 
 function MinimapScene({ currentCamera }: { currentCamera: string }) {
   return (
@@ -113,21 +116,44 @@ function MinimapScene({ currentCamera }: { currentCamera: string }) {
   )
 }
 
-export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange, onZoomChange, zoomLevel = 1, onVisibilityChange }: CameraMinimapProps) {
-  const [isVisible, setIsVisible] = useState(true)
+export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange, onZoomChange, zoomLevel = 1, onVisibilityChange, isVisible = true }: CameraMinimapProps) {
+  const [internalVisible, setInternalVisible] = useState(true)
+  const [showSpeedHint, setShowSpeedHint] = useState(false)
   const currentCameraInfo = CAMERA_GRID[currentCamera]
+
+  // Use external isVisible prop if provided, otherwise use internal state
+  const actualIsVisible = isVisible !== undefined ? isVisible : internalVisible
+
+
+  // Speed hint 표시 로직 - 항상 표시
+  useEffect(() => {
+    if (actualIsVisible) {
+      // 카메라 미니맵이 표시되면 항상 힌트 표시
+      setShowSpeedHint(true)
+    } else {
+      setShowSpeedHint(false)
+    }
+  }, [actualIsVisible])
+
 
   const handleZoomChange = useCallback((newZoom: number) => {
     onZoomChange?.(newZoom)
   }, [onZoomChange])
 
+
   const toggleVisibility = () => {
-    const newVisibility = !isVisible
-    setIsVisible(newVisibility)
-    onVisibilityChange?.(newVisibility)
+    const newVisibility = !actualIsVisible
+    if (isVisible !== undefined) {
+      // External control - notify parent
+      onVisibilityChange?.(newVisibility)
+    } else {
+      // Internal control
+      setInternalVisible(newVisibility)
+      onVisibilityChange?.(newVisibility)
+    }
   }
 
-  if (!isVisible) {
+  if (!actualIsVisible) {
     return (
       <button
         className="camera-toggle-btn"
@@ -140,7 +166,8 @@ export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange
   }
 
   return (
-    <div className="camera-minimap">
+    <>
+      <div className="camera-minimap">
       <div className="minimap-header">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h4>📹 Camera View</h4>
@@ -232,6 +259,13 @@ export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange
             <span>100ms</span>
             <span>3000ms</span>
           </div>
+
+          {/* Speed Hint Text */}
+          {showSpeedHint && (
+            <div className="speed-hint-simple">
+              💡 애니메이션 속도를 낮추면 더빠르게 큐브를 조작할 수 있습니다
+            </div>
+          )}
         </div>
       )}
 
@@ -271,6 +305,8 @@ export function CameraMinimap({ currentCamera, animationSpeed = 1, onSpeedChange
           </div>
         </div>
       )}
-    </div>
+      </div>
+
+    </>
   )
 }

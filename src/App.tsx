@@ -74,15 +74,25 @@ function App() {
   // Handle speedcubing mode activation/deactivation
   useEffect(() => {
     const wasSpeedcubingMode = prevSpeedcubingModeRef.current;
-    
+
     if (isSpeedcubingMode && !wasSpeedcubingMode) {
-      // First time entering speedcubing mode - reset cube
+      // First time entering speedcubing mode - reset cube and close all panels
       activateSpeedcubingMode(true);
+
+      // Close all panels for distraction-free speedcubing
+      setShowRankingPanel(false);
+      setShowKeyGuide(false);
+      setIsCameraMinimapVisible(false);
     } else if (!isSpeedcubingMode && wasSpeedcubingMode) {
-      // Exiting speedcubing mode
+      // Exiting speedcubing mode - restore panels
       deactivateSpeedcubingMode();
+
+      // Restore panels to their default state
+      setShowRankingPanel(true);
+      setShowKeyGuide(true);
+      setIsCameraMinimapVisible(true);
     }
-    
+
     // Update previous state
     prevSpeedcubingModeRef.current = isSpeedcubingMode;
   }, [isSpeedcubingMode]);
@@ -227,7 +237,9 @@ function App() {
     onTimerSpaceUp: handleTimerSpaceUp,
     onAnimationSpeedChange: setAnimationSpeed,
     onZoomChange: setZoomLevel,
-    onModeToggle: () => setIsSpeedcubingMode(!isSpeedcubingMode),
+    onModeToggle: () => {
+      setIsSpeedcubingMode(!isSpeedcubingMode);
+    },
     animationSpeed: animationSpeed,
     zoomLevel: zoomLevel,
     isAnimating: cubeState !== "idle",
@@ -241,9 +253,11 @@ function App() {
   return (
     <div className="app">
       {/* Mode Toggle */}
-      <ModeToggle 
+      <ModeToggle
         isSpeedcubingMode={isSpeedcubingMode}
-        onToggle={setIsSpeedcubingMode}
+        onToggle={(mode) => {
+          setIsSpeedcubingMode(mode);
+        }}
       />
 
 
@@ -266,6 +280,7 @@ function App() {
         onZoomChange={setZoomLevel}
         zoomLevel={zoomLevel}
         onVisibilityChange={setIsCameraMinimapVisible}
+        isVisible={isCameraMinimapVisible}
       />
 
       {/* Speedcube Timer (only in speedcubing mode) */}
@@ -321,6 +336,14 @@ function App() {
       {/* Footer */}
       <footer className="app-footer">
         <div className="footer-content">
+          <div className="footer-links">
+            <a href="https://k-library.vercel.app/" target="_blank" rel="noopener noreferrer">
+              Portfolio
+            </a>
+            <a href="https://github.com/Kuneosu" target="_blank" rel="noopener noreferrer">
+              Github
+            </a>
+          </div>
           <p>&copy; 2025 Kuneosu. All rights reserved.</p>
         </div>
       </footer>

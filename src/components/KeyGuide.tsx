@@ -75,9 +75,19 @@ export function KeyGuide({ isVisible = false, onToggleVisibility, isCameraMinima
               <span className="guide-desc">큐브 90도 회전</span>
             </div>
             <div className="guide-row">
-              <span className="guide-key">Shift</span>
+              <span style={{ color: '#cccccc', fontSize: '12px' }}>Hold <span className="guide-key">Shift</span></span>
               <span className="guide-desc">반시계방향 회전</span>
             </div>
+          </div>
+          <div style={{
+            marginTop: '8px',
+            padding: '6px 8px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '4px',
+            fontSize: '10px',
+            color: 'rgba(255, 255, 255, 0.7)'
+          }}>
+            💡 예: Shift+Q = Front' (반시계)
           </div>
         </div>
 
