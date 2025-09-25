@@ -1,11 +1,17 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import { getCameraRelativeMapping } from '../utils/cameraRelativeControls'
 import { getCameraRelativeXRotation } from '../utils/cameraRelativeMath'
-import { 
-  isTopBottomView, 
-  getNextTopBottomView, 
-  getPrevTopBottomView 
+import {
+  isTopBottomView,
+  getNextTopBottomView,
+  getPrevTopBottomView
 } from '../constants/cameraLayout'
+
+interface KeyCommand {
+  key: string
+  shift: boolean
+  ctrl: boolean
+}
 
 interface UseKeyboardControlsProps {
   onFaceRotation: (notation: string, addToHistory?: boolean, duration?: number, showHighlight?: boolean, displayNotation?: string) => void
@@ -65,11 +71,13 @@ export function useKeyboardControls({
   timerState,
   isInputMode
 }: UseKeyboardControlsProps) {
-  
-  const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    // Prevent actions during animations
-    if (isAnimating) return
 
+  // 키 입력 큐 (크기 1로 제한 - 최근 입력만 보관)
+  const keyQueueRef = useRef<KeyCommand | null>(null)
+  const prevAnimatingRef = useRef(isAnimating)
+
+  // 실제 키 명령을 실행하는 함수 (큐 처리에도 사용)
+  const executeKeyCommand = useCallback((event: KeyboardEvent) => {
     // Prevent actions during input mode (nickname input, etc.)
     if (isInputMode) return
 
@@ -413,7 +421,6 @@ export function useKeyboardControls({
         break
     }
   }, [
-    isAnimating,
     currentCamera,
     animationSpeed,
     zoomLevel,
@@ -437,6 +444,67 @@ export function useKeyboardControls({
     isSpeedcubingMode,
     isInputMode
   ])
+
+  // 큐에서 키 명령 처리하는 함수
+  const processQueuedCommand = useCallback((command: KeyCommand) => {
+    console.log('Processing queued command:', command.key, command.shift ? '(Shift)' : '')
+
+    const mockEvent = {
+      key: command.key,
+      shiftKey: command.shift,
+      ctrlKey: command.ctrl,
+      metaKey: false,
+      code: `Key${command.key.toUpperCase()}`,
+      preventDefault: () => {},
+      repeat: false
+    } as KeyboardEvent
+
+    // executeKeyCommand를 직접 호출
+    executeKeyCommand(mockEvent)
+  }, [executeKeyCommand])
+
+  // 애니메이션 상태 변화 감지 및 큐 처리
+  useEffect(() => {
+    // 애니메이션이 끝났을 때 (isAnimating: true → false)
+    if (prevAnimatingRef.current && !isAnimating && keyQueueRef.current) {
+      console.log('Animation ended, processing queued key:', keyQueueRef.current.key)
+
+      // 입력 모드가 아닐 때만 큐 처리
+      if (!isInputMode) {
+        processQueuedCommand(keyQueueRef.current)
+      }
+
+      // 큐 초기화
+      keyQueueRef.current = null
+    }
+
+    // 현재 애니메이션 상태 저장
+    prevAnimatingRef.current = isAnimating
+  }, [isAnimating, isInputMode, processQueuedCommand])
+
+  // 새로운 handleKeyPress - 애니메이션 중일 때 큐에 저장
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    // 입력 모드일 때는 처리하지 않음
+    if (isInputMode) return
+
+    const key = event.key.toLowerCase()
+    const shift = event.shiftKey
+    const ctrl = event.ctrlKey || event.metaKey
+
+    // 큐브 회전 관련 키만 큐에 저장 (QWEASD)
+    const isCubeRotationKey = ['q', 'w', 'e', 'a', 's', 'd'].includes(key) ||
+      ['ㅂ', 'ㅈ', 'ㄷ', 'ㅁ', 'ㄴ', 'ㅇ', 'ㅃ', 'ㅉ', 'ㄸ'].includes(key)
+
+    if (isAnimating && isCubeRotationKey) {
+      // 애니메이션 중이고 큐브 회전 키인 경우 큐에 저장 (덮어쓰기)
+      keyQueueRef.current = { key, shift, ctrl }
+      console.log('Queued key during animation:', key, shift ? '(Shift)' : '')
+      return
+    }
+
+    // 애니메이션 중이 아니거나 큐브 회전 키가 아닌 경우 바로 실행
+    executeKeyCommand(event)
+  }, [isAnimating, isInputMode, executeKeyCommand])
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     // Prevent actions during input mode
