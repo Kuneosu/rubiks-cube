@@ -113,10 +113,6 @@ export function KeyGuide({ isVisible = false, onToggleVisibility, isCameraMinima
               <span className="guide-key">T</span>
               <span className="guide-desc">Top View</span>
             </div>
-            <div className="guide-row">
-              <span className="guide-key">B</span>
-              <span className="guide-desc">Bottom View</span>
-            </div>
           </div>
         </div>
 

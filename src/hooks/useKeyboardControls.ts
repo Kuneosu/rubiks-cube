@@ -104,7 +104,6 @@ export function useKeyboardControls({
       // Control keys
       'ㄱ': 'r',  // r = ㄱ (reset)
       'ㅅ': 't',  // t = ㅅ (top view)
-      'ㅠ': 'b',  // b = ㅠ (bottom view)
       'ㅗ': 'h',  // h = ㅗ (help/controls)
       'ㅛ': 'y',  // y = ㅛ (redo)
       'ㅋ': 'z',  // z = ㅋ (undo)
@@ -496,11 +495,6 @@ export function useKeyboardControls({
       case 't':
         event.preventDefault()
         onCameraView('top')
-        break
-
-      case 'b':
-        event.preventDefault()
-        onCameraView('bottom')
         break
     }
   }, [
