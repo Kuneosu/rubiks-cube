@@ -240,22 +240,7 @@ export function useKeyboardControls({
       onFaceRotation(notation, true, undefined, true, displayNotation)
       return
     }
-    
-    // Camera view controls (number keys)
-    if (['1', '2', '3', '4', '5', '6'].includes(key)) {
-      event.preventDefault()
-      const viewMap: Record<string, string> = {
-        '1': 'front',
-        '2': 'back', 
-        '3': 'right',
-        '4': 'left',
-        '5': 'top',
-        '6': 'bottom'
-      }
-      onCameraView(viewMap[key])
-      return
-    }
-    
+
     // Shuffle control (0 key)
     if (key === '0') {
       event.preventDefault()
