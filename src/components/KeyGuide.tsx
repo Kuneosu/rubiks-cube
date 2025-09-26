@@ -72,6 +72,9 @@ export function KeyGuide({ isVisible = false, onToggleVisibility, isCameraMinima
             <div className="guide-row">
               <span className="guide-key">↑</span>
               <span className="guide-key">↓</span>
+              <span style={{ color: '#888', fontSize: '11px', margin: '0 4px' }}>or</span>
+              <span className="guide-key">I</span>
+              <span className="guide-key">K</span>
               <span className="guide-desc">큐브 90도 회전</span>
             </div>
             <div className="guide-row">
@@ -96,10 +99,14 @@ export function KeyGuide({ isVisible = false, onToggleVisibility, isCameraMinima
           <div className="guide-keys">
             <div className="guide-row">
               <span className="guide-key">←</span>
+              <span style={{ color: '#888', fontSize: '11px', margin: '0 4px' }}>or</span>
+              <span className="guide-key">J</span>
               <span className="guide-desc">이전 코너</span>
             </div>
             <div className="guide-row">
               <span className="guide-key">→</span>
+              <span style={{ color: '#888', fontSize: '11px', margin: '0 4px' }}>or</span>
+              <span className="guide-key">L</span>
               <span className="guide-desc">다음 코너</span>
             </div>
             <div className="guide-row">

@@ -95,6 +95,12 @@ export function useKeyboardControls({
       'ㄴ': 's',  // s = ㄴ
       'ㅇ': 'd',  // d = ㅇ
 
+      // Camera navigation keys (IJKL)
+      'ㅑ': 'i',  // i = ㅑ (camera up)
+      'ㅓ': 'j',  // j = ㅓ (camera left)
+      'ㅏ': 'k',  // k = ㅏ (camera down)
+      'ㅣ': 'l',  // l = ㅣ (camera right)
+
       // Control keys
       'ㄱ': 'r',  // r = ㄱ (reset)
       'ㅅ': 't',  // t = ㅅ (top view)
@@ -105,7 +111,7 @@ export function useKeyboardControls({
 
       // Animation speed control keys
       'ㅡ': ',',  // , = ㅡ (decrease speed)
-      'ㅣ': '.'   // . = ㅣ (increase speed)
+      // Note: ㅣ is already used for 'l' (camera right), so period key uses original mapping
     }
 
     // Korean Shift key mapping (쌍자음) - these should be treated as Shift+key
@@ -257,7 +263,84 @@ export function useKeyboardControls({
       onShuffle()
       return
     }
-    
+
+    // IJKL camera navigation (alternative to arrow keys)
+    if (['i', 'j', 'k', 'l'].includes(key)) {
+      // I = ArrowUp, J = ArrowLeft, K = ArrowDown, L = ArrowRight
+
+      // Special controls for Top/Bottom views - rotate the view, not the cube
+      if (isTopBottomView(currentCamera)) {
+        console.log(`DEBUG: Top/Bottom view detected: ${currentCamera}`)
+
+        if (key === 'j') { // J = ArrowLeft
+          event.preventDefault()
+          // Rotate view 90 degrees counterclockwise
+          const nextView = getPrevTopBottomView(currentCamera)
+          console.log(`DEBUG: J key - ${currentCamera} → ${nextView}`)
+          onCameraJump(nextView)
+          return
+        }
+
+        if (key === 'l') { // L = ArrowRight
+          event.preventDefault()
+          // Rotate view 90 degrees clockwise
+          const nextView = getNextTopBottomView(currentCamera)
+          console.log(`DEBUG: L key - ${currentCamera} → ${nextView}`)
+          onCameraJump(nextView)
+          return
+        }
+
+        if (key === 'i' || key === 'k') { // I = ArrowUp, K = ArrowDown
+          event.preventDefault()
+          // Return to Upper view (default camera)
+          console.log(`DEBUG: I/K key - returning to upper-0`)
+          onCameraJump('upper-0')
+          return
+        }
+      }
+
+      // Standard camera navigation with IJKL keys (for corner cameras only)
+      if (key === 'j') { // J = ArrowLeft
+        event.preventDefault()
+        onCameraLeft()
+        return
+      }
+
+      if (key === 'l') { // L = ArrowRight
+        event.preventDefault()
+        onCameraRight()
+        return
+      }
+
+      if (key === 'i') { // I = ArrowUp
+        event.preventDefault()
+        // Block cube rotation if in speedcubing mode and cube is locked
+        if (isSpeedcubingMode && isCubeLocked) {
+          return
+        }
+        // 카메라 기준 X축 회전 (아래 방향키와 반대방향)
+        const xRotation = getCameraRelativeXRotation(currentCamera)
+        const notation = shift ? xRotation : xRotation + "'"
+        console.log(`DEBUG: Camera: ${currentCamera}, I key X-Rotation: ${xRotation}, Shift: ${shift}, Notation: ${notation} (opposite of K)`)
+        onFaceRotation(notation)
+        return
+      }
+
+      if (key === 'k') { // K = ArrowDown
+        event.preventDefault()
+        // Block cube rotation if in speedcubing mode and cube is locked
+        if (isSpeedcubingMode && isCubeLocked) {
+          return
+        }
+        // 카메라 기준 X축 회전 (세로 굴리기) - 원래 동작 유지
+        const xRotation = getCameraRelativeXRotation(currentCamera)
+        const notation = shift ? xRotation + "'" : xRotation
+        console.log(`DEBUG: Camera: ${currentCamera}, K key X-Rotation: ${xRotation}, Shift: ${shift}, Notation: ${notation}`)
+        onFaceRotation(notation)
+        return
+      }
+    }
+
     // Special controls for Top/Bottom views - rotate the view, not the cube
     // IMPORTANT: This must come BEFORE standard arrow key navigation
     if (isTopBottomView(currentCamera)) {
